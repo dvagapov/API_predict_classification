@@ -1,0 +1,44 @@
+version: '3.7'
+
+networks:
+  my-network:
+
+services:
+
+  postgres:
+    image: postgres:12.2
+    container_name: postgres
+    restart: always
+    #command: sh -c "chmod +x /tmp/init_db.sh && /tmp/init_db.sh"
+    environment:
+      POSTGRES_PASSWORD: "pass_admin"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "postgres"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pgconfig/init_db.sql:/docker-entrypoint-initdb.d/1-init_db.sql
+      - ./pgconfig/postgres.conf:/etc/postgresql/postgresql.conf 
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - my-network
+
+  api:
+    build: api/
+    hostname: api
+    container_name: api
+    restart: always
+    environment:
+      FLASK_APP: "project/__init__.py"
+      PG_DB: "postgres"
+      PG_USER: "api_user"
+      PG_PASS: "api$pass"
+      PG_HOST: "postgres"
+    ports:
+    - 5000:5000
+    depends_on:
+      - postgres
+    networks:
+    - my-network
