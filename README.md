@@ -9,6 +9,7 @@ Will run four containers:
 
 For postgres will also execute pgconfig/init_db.sql. The script contains Schema of DB recommendation with small sample data. 
 
+## TEst to push
 ## Used libs for API:
 	* json
 	* sys, os, io, base64
